@@ -6,11 +6,10 @@ cli = Commander::Command.new do |cmd|
   cmd.long = "wimpi indexer"
 
   cmd.run do |options, arguments|
-    puts cmd.help            # => Render help screen
+    puts cmd.help # => Render help screen
   end
 
   cmd.commands.add do |cmd|
-
     cmd.flags.add do |flag|
       flag.name = "verbose"
       flag.short = "-v"
@@ -30,7 +29,6 @@ cli = Commander::Command.new do |cmd|
       p "hello world"
     end
   end
-
 end
 
 {% if !@type.has_constant? "TESTING" %}
