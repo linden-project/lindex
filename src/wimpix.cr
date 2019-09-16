@@ -1,5 +1,9 @@
 require "commander"
+require "yaml"
 require "./wimpix/*"
+
+module Commander
+end
 
 cli = Commander::Command.new do |cmd|
   cmd.use = "wimpix"
@@ -26,10 +30,13 @@ cli = Commander::Command.new do |cmd|
         p options
         p arguments
       end
-      p "hello world"
+
+      env = Wimpix::Environment.new(options.bool["verbose"])
+
     end
   end
 end
+
 
 {% if !@type.has_constant? "TESTING" %}
   Commander.run(cli, ARGV)
