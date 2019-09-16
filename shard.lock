@@ -1,0 +1,14 @@
+version: 1.0
+shards:
+  commander:
+    github: mrrooijen/commander
+    version: 0.3.3
+
+  coverage:
+    github: anykeyh/crystal-coverage
+    commit: 865383b31c51130612a9f6900a9666bcbfe9a426
+
+  front_matter:
+    github: chris-huxtable/front_matter.cr
+    version: 0.1.1
+

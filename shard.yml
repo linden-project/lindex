@@ -1,0 +1,24 @@
+name: wimpix
+version: 0.1.0
+
+license: MIT
+
+authors:
+  - Pim Snel <pim@lingewoud.nl>
+
+targets:
+  wimpix:
+    main: src/wimpix.cr
+
+crystal: 0.30.1
+
+dependencies:
+  commander:
+    github: mrrooijen/commander
+    version: ~> 0.3.3
+  front_matter:
+    github: chris-huxtable/front_matter.cr
+
+development_dependencies:
+  coverage:
+    github: anykeyh/crystal-coverage
