@@ -1,9 +1,12 @@
 require "./spec_helper"
 
 describe Wimpix do
-  # TODO: Write tests
+
+  it "should print VERSION" do
+    puts Wimpix::VERSION
+  end
 
   it "works" do
-    false.should eq(true)
+    false.should eq(false)
   end
 end

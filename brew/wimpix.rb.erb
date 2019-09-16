@@ -1,0 +1,13 @@
+class wimpix < Formula
+  desc "wimpix, markdown document database indexer"
+  version "<%= version %>"
+  homepage "https://github.com/mipmip/wimpix"
+  url "https://github.com/mipmip/wimpix/archive/v#{version}.tar.gz"
+  sha256 "<%= sha %>"
+  depends_on "crystal-lang"
+
+  def install
+    system "shards install && make"
+    bin.install "bin/wimpix"
+  end
+end
