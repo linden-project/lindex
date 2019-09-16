@@ -32,11 +32,9 @@ cli = Commander::Command.new do |cmd|
       end
 
       env = Wimpix::Environment.new(options.bool["verbose"])
-
     end
   end
 end
-
 
 {% if !@type.has_constant? "TESTING" %}
   Commander.run(cli, ARGV)
