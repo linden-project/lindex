@@ -1,14 +1,14 @@
 class Wimpix::Environment
-  # getter wimpi_root : Path
-  getter index_dir : Path
-  # getter index_conf_file : Path
-  getter wiki_dir : Path
 
+  getter main_config_file : String
+  getter verbose : Bool
+
+  getter index_dir : Path
+  getter wiki_dir : Path
   getter index_conf : YAML::Any
 
-  def initialize(verbose)
-    file = "~/.wimpi/wimpi.yml"
-    filename = Path[file].expand
+  def initialize(@main_config_file, @verbose)
+    filename = Path[@main_config_file].expand
 
     raise "FATAL 1ST CONF: #{filename}" unless File.exists?(filename)
 
@@ -21,15 +21,7 @@ class Wimpix::Environment
     index_conf_file = Path[main_conf["root_path"].as_s, "config", "wiki_indexes.yml"].expand
     @index_conf = File.open(index_conf_file) { |file| YAML.parse(file) }
 
-    pp @index_conf if verbose
-  end
-
-  def dump_data
-    pp @data
-  end
-
-  def dump_config
-    pp @conf
+    pp @index_conf if @verbose
   end
 
   def file_name_to_wiki_link(item)

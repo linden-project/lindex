@@ -1,5 +1,6 @@
 require "commander"
 require "yaml"
+require "front_matter"
 require "./wimpix/*"
 
 module Commander
@@ -22,6 +23,14 @@ cli = Commander::Command.new do |cmd|
       flag.description = "Enable more verbose logging."
     end
 
+    cmd.flags.add do |flag|
+      flag.name = "conf_path"
+      flag.short = "-c"
+      flag.long = "--config"
+      flag.default = "~/.wimpi/wimpi.yml"
+      flag.description = "alternative path to config file."
+    end
+
     cmd.use = "make"
     cmd.short = "create index"
     cmd.long = cmd.short
@@ -31,7 +40,10 @@ cli = Commander::Command.new do |cmd|
         p arguments
       end
 
-      env = Wimpix::Environment.new(options.bool["verbose"])
+      env = Wimpix::Environment.new(options.string["conf_path"] , options.bool["verbose"])
+
+      idx = Wimpix::MdFmIndexer.new(env)
+
     end
   end
 end
