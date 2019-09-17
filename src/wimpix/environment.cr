@@ -1,5 +1,4 @@
 class Wimpix::Environment
-
   getter main_config_file : String
   getter verbose : Bool
 

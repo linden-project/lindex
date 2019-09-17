@@ -41,10 +41,9 @@ cli = Commander::Command.new do |cmd|
         p arguments
       end
 
-      env = Wimpix::Environment.new(options.string["conf_path"] , options.bool["verbose"])
+      env = Wimpix::Environment.new(options.string["conf_path"], options.bool["verbose"])
 
       idx = Wimpix::MdFmIndexer.new(env)
-
     end
   end
 end

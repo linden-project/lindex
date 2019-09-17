@@ -1,19 +1,17 @@
 class Wimpix::MdFmIndexer
-
   getter env : Wimpix::Environment
 
-  #getter idx_h_docs_errors : {} of String => String
-  #getter idx_h_docs_errors : Hash
-  #getter idx_a_docs_starred : [] of String
-  #getter idx_h_docs_with_keys : {} of String => {}
-  #getter idx_a_fm_keys_found : [] of String
-  #getter idx_a_fm_keys_conf : [] of String
+  # getter idx_h_docs_errors : {} of String => String
+  # getter idx_h_docs_errors : Hash
+  # getter idx_a_docs_starred : [] of String
+  # getter idx_h_docs_with_keys : {} of String => {}
+  # getter idx_a_fm_keys_found : [] of String
+  # getter idx_a_fm_keys_conf : [] of String
 
   getter proc_yaml_level = 0
   getter proc_yaml_file = ""
 
   def initialize(@env)
-
     @idx_h_docs_errors = {} of String => String
     @idx_a_docs_starred = [] of String
 
@@ -22,7 +20,6 @@ class Wimpix::MdFmIndexer
     read_files_populate_memory_index
 
     write_to_file(@env.index_dir.join("_index_docs_starred.json"), @idx_a_docs_starred.to_json)
-
   end
 
   def validate_path_with_option(path)
@@ -32,7 +29,6 @@ class Wimpix::MdFmIndexer
       raise path.to_s + " not a valid directory"
     end
   end
-
 
   def read_files_populate_memory_index
     @files.each do |file|
@@ -45,7 +41,6 @@ class Wimpix::MdFmIndexer
   end
 
   def index_file(file)
-
     front_matter_as_yaml_any = YAML::Any
 
     begin
@@ -58,9 +53,7 @@ class Wimpix::MdFmIndexer
     rescue
       @idx_h_docs_errors[file] = "error in front matter"
     end
-
   end
-
 
   private def proc_yaml(node : YAML::Any)
     case node.raw
@@ -75,12 +68,10 @@ class Wimpix::MdFmIndexer
     when Hash(YAML::Any, YAML::Any)
       new_node = {} of YAML::Any => YAML::Any
       node.as_h.each do |key, value|
-
         if @proc_yaml_level == 0
           if key.as_s == "starred" && value.as_bool
             @idx_a_docs_starred << @proc_yaml_file
           end
-
         end
 
         new_node[YAML::Any.new(key.as_s)] = proc_yaml(value)
@@ -98,6 +89,4 @@ class Wimpix::MdFmIndexer
     file_h.puts contents
     file_h.close
   end
-
 end
-
