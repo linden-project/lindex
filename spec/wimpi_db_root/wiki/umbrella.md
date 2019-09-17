@@ -1,4 +1,5 @@
 ---
+starred: true
 title: umbrella
 category: wet prevention object
 project: human health

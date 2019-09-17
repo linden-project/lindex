@@ -1,6 +1,7 @@
 ---
 title: Lorum Ipsum
 customer: Caesar
+archived: false
 category: fake
 ---
 

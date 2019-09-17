@@ -17,7 +17,7 @@ describe Wimpix do
   end
 
   it "should populate data" do
-    env = Wimpix::Environment.new(CONFIG_FILE, true)
+    env = Wimpix::Environment.new(CONFIG_FILE, false)
     idx = Wimpix::MdFmIndexer.new(env)
   end
 end

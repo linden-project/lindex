@@ -1,5 +1,6 @@
 require "commander"
 require "yaml"
+require "json"
 require "front_matter"
 require "./wimpix/*"
 
