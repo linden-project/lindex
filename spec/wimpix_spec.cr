@@ -16,8 +16,20 @@ describe Wimpix do
     env.l3_index_filepath("project", "wimpix development").should eq(Path["tmp/wimpi_index_files/L3-INDEX_TRM_project_VAL_wimpix development.json"].expand)
   end
 
-  it "should populate data" do
-    env = Wimpix::Environment.new(CONFIG_FILE, false)
-    idx = Wimpix::MdFmIndexer.new(env)
+  it "should create index and have valid _index_docs_starred.json" do
+    reset_tmp_dir
+    make_index
+
+    starred_json = File.open(Path["tmp/wimpi_index_files/_index_docs_starred.json"].expand) { |file| JSON.parse(file) }
+    starred_json.as_a.size.should eq 2
   end
+
+  it "should create index and have valid _index_keys.json" do
+    reset_tmp_dir
+    make_index
+
+    index_keys_json = File.open(Path["tmp/wimpi_index_files/_index_keys.json"].expand) { |file| JSON.parse(file) }
+    index_keys_json.as_a.size.should eq 5
+  end
+
 end

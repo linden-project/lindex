@@ -8,29 +8,43 @@ class Wimpix::MdFmIndexer
   # getter idx_a_fm_keys_found : [] of String
   # getter idx_a_fm_keys_conf : [] of String
 
-  getter proc_yaml_level = 0
-  getter proc_yaml_file = ""
+  #getter proc_yaml_level = 0
+  #getter proc_yaml_file = ""
 
   def initialize(@env)
     @idx_h_docs_errors = {} of String => String
     @idx_a_docs_starred = [] of String
 
+    @idx_a_taxonomies_singular = [] of String
+
+    @proc_yaml_level = 0
+    @proc_yaml_file = ""
+
     @files = [] of String
     @files = validate_path_with_option(@env.wiki_dir)
-    read_files_populate_memory_index
+  end
 
+  def build_in_memory
+    read_markdown_files_populate_memory_index
+    read_taxonomies_from_conf_to_memory
+  end
+
+  def write_to_disk
+    write_to_file(@env.index_dir.join("_index_keys.json"), @idx_a_taxonomies_singular.to_json)
     write_to_file(@env.index_dir.join("_index_docs_starred.json"), @idx_a_docs_starred.to_json)
   end
 
-  def validate_path_with_option(path)
-    if File.directory?(path)
-      return Dir.glob(path.to_s + "/*.md")
-    else
-      raise path.to_s + " not a valid directory"
+
+  def read_taxonomies_from_conf_to_memory
+    @env.index_conf.as_h["index_keys"].as_h.each do |index_key, index_val|
+      @idx_a_taxonomies_singular << index_val.as_h["singular"].as_s
     end
   end
 
-  def read_files_populate_memory_index
+
+
+
+  private def read_markdown_files_populate_memory_index
     @files.each do |file|
       begin
         index_file(file)
@@ -40,7 +54,7 @@ class Wimpix::MdFmIndexer
     end
   end
 
-  def index_file(file)
+  private def index_file(file)
     front_matter_as_yaml_any = YAML::Any
 
     begin
@@ -52,6 +66,14 @@ class Wimpix::MdFmIndexer
       end
     rescue
       @idx_h_docs_errors[file] = "error in front matter"
+    end
+  end
+
+  private def validate_path_with_option(path)
+    if File.directory?(path)
+      return Dir.glob(path.to_s + "/*.md")
+    else
+      raise path.to_s + " not a valid directory"
     end
   end
 
@@ -68,10 +90,9 @@ class Wimpix::MdFmIndexer
     when Hash(YAML::Any, YAML::Any)
       new_node = {} of YAML::Any => YAML::Any
       node.as_h.each do |key, value|
+
         if @proc_yaml_level == 0
-          if key.as_s == "starred" && value.as_bool
-            @idx_a_docs_starred << @proc_yaml_file
-          end
+          proc_node_index_starred_document(key, value)
         end
 
         new_node[YAML::Any.new(key.as_s)] = proc_yaml(value)
@@ -83,6 +104,13 @@ class Wimpix::MdFmIndexer
 
     node
   end
+
+    private def proc_node_index_starred_document(key, value)
+      if key.as_s == "starred" && value.as_bool
+        @idx_a_docs_starred << @proc_yaml_file
+      end
+    end
+
 
   private def write_to_file(out_file, contents)
     file_h = File.open out_file, "w"
