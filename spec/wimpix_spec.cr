@@ -32,4 +32,15 @@ describe Wimpix do
     index_keys_json.as_a.size.should eq 5
   end
 
+  it "should create index and have valid _index_docs_with_keys.json" do
+    reset_tmp_dir
+    make_index
+
+    index_docs_with_terms = File.open(Path["tmp/wimpi_index_files/_index_docs_with_keys.json"].expand) { |file| JSON.parse(file) }
+    index_docs_with_terms.as_h.size.should eq 3
+    index_docs_with_terms.as_h.each do | k,v|
+      File.exists?(k).should be_true
+      (v.as_h["title"].as_s != "").should be_true
+    end
+  end
 end

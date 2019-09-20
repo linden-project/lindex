@@ -3,6 +3,7 @@ starred: true
 title: umbrella
 category: wet prevention object
 project: human health
+word: up
 ---
 
 The At district of Tenochtitlan was reported to have used an umbrella made from

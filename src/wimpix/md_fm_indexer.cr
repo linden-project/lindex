@@ -8,17 +8,15 @@ class Wimpix::MdFmIndexer
   # getter idx_a_fm_keys_found : [] of String
   # getter idx_a_fm_keys_conf : [] of String
 
-  #getter proc_yaml_level = 0
-  #getter proc_yaml_file = ""
-
   def initialize(@env)
+
     @idx_h_docs_errors = {} of String => String
     @idx_a_docs_starred = [] of String
-
     @idx_a_taxonomies_singular = [] of String
+    @idx_h_docs_with_terms =  Hash(String, Hash(String, String)).new
 
-    @proc_yaml_level = 0
-    @proc_yaml_file = ""
+    @proc_current_yaml_level = 0
+    @proc_current_markdown_file = ""
 
     @files = [] of String
     @files = validate_path_with_option(@env.wiki_dir)
@@ -32,6 +30,7 @@ class Wimpix::MdFmIndexer
   def write_to_disk
     write_to_file(@env.index_dir.join("_index_keys.json"), @idx_a_taxonomies_singular.to_json)
     write_to_file(@env.index_dir.join("_index_docs_starred.json"), @idx_a_docs_starred.to_json)
+    write_to_file(@env.index_dir.join("_index_docs_with_keys.json"), @idx_h_docs_with_terms.to_json)
   end
 
 
@@ -40,9 +39,6 @@ class Wimpix::MdFmIndexer
       @idx_a_taxonomies_singular << index_val.as_h["singular"].as_s
     end
   end
-
-
-
 
   private def read_markdown_files_populate_memory_index
     @files.each do |file|
@@ -60,9 +56,9 @@ class Wimpix::MdFmIndexer
     begin
       FrontMatter.open(file, false) do |front_matter, _|
         front_matter_as_yaml_any = YAML.parse front_matter
-        @proc_yaml_level = 0
-        @proc_yaml_file = file
-        proc_yaml(front_matter_as_yaml_any)
+        @proc_current_yaml_level = 0
+        @proc_current_markdown_file = file
+        proc_yaml(front_matter_as_yaml_any, @proc_current_yaml_level)
       end
     rescue
       @idx_h_docs_errors[file] = "error in front matter"
@@ -77,40 +73,60 @@ class Wimpix::MdFmIndexer
     end
   end
 
-  private def proc_yaml(node : YAML::Any)
+  private def proc_yaml(node : YAML::Any, level : Int)
+
     case node.raw
+
     when String
+
       return YAML::Any.new(node.as_s)
+
     when Array(YAML::Any)
       new_node = [] of YAML::Any
       node.as_a.each do |value|
-        new_node << proc_yaml(value)
+        new_node << proc_yaml(value, level+1)
       end
+
       return YAML::Any.new(new_node)
+
     when Hash(YAML::Any, YAML::Any)
       new_node = {} of YAML::Any => YAML::Any
       node.as_h.each do |key, value|
 
-        if @proc_yaml_level == 0
+        if level == 0
           proc_node_index_starred_document(key, value)
+          proc_node_index_terms_in_document(key, value)
         end
 
-        new_node[YAML::Any.new(key.as_s)] = proc_yaml(value)
+        new_node[YAML::Any.new(key.as_s)] = proc_yaml(value, level+1)
       end
+
       return YAML::Any.new(new_node)
+
     else
       return node
     end
 
-    node
+  #  node
   end
 
-    private def proc_node_index_starred_document(key, value)
-      if key.as_s == "starred" && value.as_bool
-        @idx_a_docs_starred << @proc_yaml_file
+  private def proc_node_index_starred_document(key, value)
+    if key.as_s == "starred" && value.as_bool
+      @idx_a_docs_starred << @proc_current_markdown_file
+    end
+  end
+
+  private def proc_node_index_terms_in_document(key, value)
+
+    case value.raw
+    when String
+      if @idx_h_docs_with_terms.has_key? @proc_current_markdown_file
+        @idx_h_docs_with_terms[@proc_current_markdown_file][key.as_s] = value.as_s
+      else
+        @idx_h_docs_with_terms[@proc_current_markdown_file] = {key.as_s => value.as_s}
       end
     end
-
+  end
 
   private def write_to_file(out_file, contents)
     file_h = File.open out_file, "w"
