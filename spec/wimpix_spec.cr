@@ -33,14 +33,29 @@ describe Wimpix do
   end
 
   it "should create index and have valid _index_docs_with_keys.json" do
+    env = Wimpix::Environment.new(CONFIG_FILE, false)
     reset_tmp_dir
     make_index
 
     index_docs_with_terms = File.open(Path["tmp/wimpi_index_files/_index_docs_with_keys.json"].expand) { |file| JSON.parse(file) }
-    index_docs_with_terms.as_h.size.should eq 3
+    index_docs_with_terms.as_h.size.should eq 4
     index_docs_with_terms.as_h.each do | k,v|
-      File.exists?(k).should be_true
+      File.exists?(env.wiki_dir.join(k)).should be_true
       (v.as_h["title"].as_s != "").should be_true
     end
   end
+
+  it "should create index and have valid _index_docs_with_title.json" do
+    env = Wimpix::Environment.new(CONFIG_FILE, false)
+    reset_tmp_dir
+    make_index
+
+    index_docs = File.open(Path["tmp/wimpi_index_files/_index_docs_with_title.json"].expand) { |file| JSON.parse(file) }
+    index_docs.as_h.size.should eq 4
+    index_docs.as_h.each do | k,v|
+      File.exists?(env.wiki_dir.join(k)).should be_true
+      (v.as_s != "").should be_true
+    end
+  end
+
 end

@@ -1,6 +1,6 @@
 ---
 starred: true
-title: umbrella
+title: Umbrella
 category: wet prevention object
 project: human health
 word: up

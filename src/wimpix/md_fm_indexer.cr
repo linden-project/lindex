@@ -14,6 +14,7 @@ class Wimpix::MdFmIndexer
     @idx_a_docs_starred = [] of String
     @idx_a_taxonomies_singular = [] of String
     @idx_h_docs_with_terms =  Hash(String, Hash(String, String)).new
+    @idx_h_docs_with_titles =  Hash(String, String).new
 
     @proc_current_yaml_level = 0
     @proc_current_markdown_file = ""
@@ -31,6 +32,7 @@ class Wimpix::MdFmIndexer
     write_to_file(@env.index_dir.join("_index_keys.json"), @idx_a_taxonomies_singular.to_json)
     write_to_file(@env.index_dir.join("_index_docs_starred.json"), @idx_a_docs_starred.to_json)
     write_to_file(@env.index_dir.join("_index_docs_with_keys.json"), @idx_h_docs_with_terms.to_json)
+    write_to_file(@env.index_dir.join("_index_docs_with_title.json"), @idx_h_docs_with_titles.to_json)
   end
 
 
@@ -44,10 +46,18 @@ class Wimpix::MdFmIndexer
     @files.each do |file|
       begin
         index_file(file)
+        if !@idx_h_docs_with_terms[File.basename(file)].has_key? "title"
+          @idx_h_docs_with_terms[File.basename(file)]["title"] = filename_to_title(file)
+        end
+        @idx_h_docs_with_titles[File.basename(file)] = @idx_h_docs_with_terms[File.basename(file)]["title"]
       rescue
-        p file + " has invalid Front Matter."
+        p file + " could not process Front Matter."
       end
     end
+  end
+
+  private def filename_to_title(filepath)
+    File.basename(filepath,".md").capitalize.gsub("_", " ")
   end
 
   private def index_file(file)
@@ -57,7 +67,7 @@ class Wimpix::MdFmIndexer
       FrontMatter.open(file, false) do |front_matter, _|
         front_matter_as_yaml_any = YAML.parse front_matter
         @proc_current_yaml_level = 0
-        @proc_current_markdown_file = file
+        @proc_current_markdown_file = File.basename(file)
         proc_yaml(front_matter_as_yaml_any, @proc_current_yaml_level)
       end
     rescue
