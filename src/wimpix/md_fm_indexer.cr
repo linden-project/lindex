@@ -1,19 +1,12 @@
 class Wimpix::MdFmIndexer
   getter env : Wimpix::Environment
 
-  # getter idx_h_docs_errors : {} of String => String
-  # getter idx_h_docs_errors : Hash
-  # getter idx_a_docs_starred : [] of String
-  # getter idx_h_docs_with_keys : {} of String => {}
-  # getter idx_a_fm_keys_found : [] of String
-  # getter idx_a_fm_keys_conf : [] of String
-
   def initialize(@env)
     @idx_h_docs_errors = {} of String => String
     @idx_a_docs_starred = [] of String
     @idx_a_taxonomies_singular = [] of String
     @idx_h_docs_with_terms = Hash(String, Hash(String, String)).new
-    @idx_h_docs_with_titles = Hash(String, String).new
+    @idx_h_docs_with_titles = Hash(String, String).new # DEPRICIATED
 
     @proc_current_yaml_level = 0
     @proc_current_markdown_file = ""
@@ -107,8 +100,6 @@ class Wimpix::MdFmIndexer
     else
       return node
     end
-
-    #  node
   end
 
   private def proc_node_index_starred_document(key, value)
