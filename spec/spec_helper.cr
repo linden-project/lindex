@@ -5,8 +5,8 @@ require "spec"
 require "../src/wimpix"
 
 def reset_tmp_dir
-    FileUtils.rm_r("tmp")
-    FileUtils.mkdir_p("tmp/wimpi_index_files")
+  FileUtils.rm_r("tmp")
+  FileUtils.mkdir_p("tmp/wimpi_index_files")
 end
 
 def make_index
@@ -15,4 +15,3 @@ def make_index
   idx.build_in_memory
   idx.write_to_disk
 end
-

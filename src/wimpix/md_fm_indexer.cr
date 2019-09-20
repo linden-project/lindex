@@ -9,12 +9,11 @@ class Wimpix::MdFmIndexer
   # getter idx_a_fm_keys_conf : [] of String
 
   def initialize(@env)
-
     @idx_h_docs_errors = {} of String => String
     @idx_a_docs_starred = [] of String
     @idx_a_taxonomies_singular = [] of String
-    @idx_h_docs_with_terms =  Hash(String, Hash(String, String)).new
-    @idx_h_docs_with_titles =  Hash(String, String).new
+    @idx_h_docs_with_terms = Hash(String, Hash(String, String)).new
+    @idx_h_docs_with_titles = Hash(String, String).new
 
     @proc_current_yaml_level = 0
     @proc_current_markdown_file = ""
@@ -34,7 +33,6 @@ class Wimpix::MdFmIndexer
     write_to_file(@env.index_dir.join("_index_docs_with_keys.json"), @idx_h_docs_with_terms.to_json)
     write_to_file(@env.index_dir.join("_index_docs_with_title.json"), @idx_h_docs_with_titles.to_json)
   end
-
 
   def read_taxonomies_from_conf_to_memory
     @env.index_conf.as_h["index_keys"].as_h.each do |index_key, index_val|
@@ -57,7 +55,7 @@ class Wimpix::MdFmIndexer
   end
 
   private def filename_to_title(filepath)
-    File.basename(filepath,".md").capitalize.gsub("_", " ")
+    File.basename(filepath, ".md").capitalize.gsub("_", " ")
   end
 
   private def index_file(file)
@@ -84,40 +82,33 @@ class Wimpix::MdFmIndexer
   end
 
   private def proc_yaml(node : YAML::Any, level : Int)
-
     case node.raw
-
     when String
-
       return YAML::Any.new(node.as_s)
-
     when Array(YAML::Any)
       new_node = [] of YAML::Any
       node.as_a.each do |value|
-        new_node << proc_yaml(value, level+1)
+        new_node << proc_yaml(value, level + 1)
       end
 
       return YAML::Any.new(new_node)
-
     when Hash(YAML::Any, YAML::Any)
       new_node = {} of YAML::Any => YAML::Any
       node.as_h.each do |key, value|
-
         if level == 0
           proc_node_index_starred_document(key, value)
           proc_node_index_terms_in_document(key, value)
         end
 
-        new_node[YAML::Any.new(key.as_s)] = proc_yaml(value, level+1)
+        new_node[YAML::Any.new(key.as_s)] = proc_yaml(value, level + 1)
       end
 
       return YAML::Any.new(new_node)
-
     else
       return node
     end
 
-  #  node
+    #  node
   end
 
   private def proc_node_index_starred_document(key, value)
@@ -127,7 +118,6 @@ class Wimpix::MdFmIndexer
   end
 
   private def proc_node_index_terms_in_document(key, value)
-
     case value.raw
     when String
       if @idx_h_docs_with_terms.has_key? @proc_current_markdown_file

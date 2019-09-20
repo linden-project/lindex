@@ -39,7 +39,7 @@ describe Wimpix do
 
     index_docs_with_terms = File.open(Path["tmp/wimpi_index_files/_index_docs_with_keys.json"].expand) { |file| JSON.parse(file) }
     index_docs_with_terms.as_h.size.should eq 4
-    index_docs_with_terms.as_h.each do | k,v|
+    index_docs_with_terms.as_h.each do |k, v|
       File.exists?(env.wiki_dir.join(k)).should be_true
       (v.as_h["title"].as_s != "").should be_true
     end
@@ -52,10 +52,9 @@ describe Wimpix do
 
     index_docs = File.open(Path["tmp/wimpi_index_files/_index_docs_with_title.json"].expand) { |file| JSON.parse(file) }
     index_docs.as_h.size.should eq 4
-    index_docs.as_h.each do | k,v|
+    index_docs.as_h.each do |k, v|
       File.exists?(env.wiki_dir.join(k)).should be_true
       (v.as_s != "").should be_true
     end
   end
-
 end
