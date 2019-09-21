@@ -10,7 +10,6 @@ class Wimpix::MdFmIndexer
   @idx_h_docs_with_titles = Hash(String, String).new # DEPRICIATED
 
   def initialize(@env)
-
     @proc_current_yaml_level = 0
     @proc_current_markdown_file = ""
 
@@ -41,20 +40,17 @@ class Wimpix::MdFmIndexer
 
   def read_taxonomies_from_conf_to_memory
     @env.index_conf.as_h["index_keys"].as_h.each do |index_key, index_val|
-
       @idx_a_taxonomies_singular << index_val.as_h["singular"].as_s
 
-      #index_key_vals_titles = {}
+      # index_key_vals_titles = {}
       if index_val.as_h.has_key?("features") && index_val.as_h["features"].as_a.includes? "sub_index"
+        # index_key_vals_titles[index_key_val] = get_taxo_val_conf(index_key, index_key_val)
 
-          #index_key_vals_titles[index_key_val] = get_taxo_val_conf(index_key, index_key_val)
+        p "meer"
 
-          p "meer"
-
-#        @front_matter.data['index_keys'][index_key].each do | index_key_val, index_key_val_docs|
-#        p get_taxo_val_conf(index_key, index_key_val)
+        #        @front_matter.data['index_keys'][index_key].each do | index_key_val, index_key_val_docs|
+        #        p get_taxo_val_conf(index_key, index_key_val)
       end
-
     end
   end
 
@@ -68,37 +64,37 @@ class Wimpix::MdFmIndexer
     end
   end
 
-#  def write_front_matter_sub_index_files
-#
-#    index_keys_singular = []
-#
-#    @front_matter.conf['index_keys'].each do |index_key, index_val|
-#
-#      index_keys_singular << index_val['singular']
-#      index_key_vals_titles = {}
-#
-#      if index_val.key?('features') and index_val['features'].include? 'sub_index'
-#
-#        @front_matter.data['index_keys'][index_key].each do | index_key_val, index_key_val_docs|
-#
-#          index_key_vals_titles[index_key_val] = get_taxo_val_conf(index_key, index_key_val)
-#
-#          sorted_docs = index_key_val_docs.grep_v(/index_/).sort
-#
-#          ## write term value index
-#          File.open( l3_index_filepath(index_key,index_key_val), 'w') { |file| file.write(sorted_docs.to_json) }
-#
-#        end
-#      end
-#
-#      ## write term index
-#      File.open( l2_index_filepath(index_key), 'w') { |file| file.write(index_key_vals_titles.to_json) }
-#    end
-#
-#    ## write term index
-#    filename = "_index_keys.json"
-#    File.open("#{indexdir}/#{filename}", 'w') { |file| file.write(index_keys_singular.to_json) }
-#  end
+  #  def write_front_matter_sub_index_files
+  #
+  #    index_keys_singular = []
+  #
+  #    @front_matter.conf['index_keys'].each do |index_key, index_val|
+  #
+  #      index_keys_singular << index_val['singular']
+  #      index_key_vals_titles = {}
+  #
+  #      if index_val.key?('features') and index_val['features'].include? 'sub_index'
+  #
+  #        @front_matter.data['index_keys'][index_key].each do | index_key_val, index_key_val_docs|
+  #
+  #          index_key_vals_titles[index_key_val] = get_taxo_val_conf(index_key, index_key_val)
+  #
+  #          sorted_docs = index_key_val_docs.grep_v(/index_/).sort
+  #
+  #          ## write term value index
+  #          File.open( l3_index_filepath(index_key,index_key_val), 'w') { |file| file.write(sorted_docs.to_json) }
+  #
+  #        end
+  #      end
+  #
+  #      ## write term index
+  #      File.open( l2_index_filepath(index_key), 'w') { |file| file.write(index_key_vals_titles.to_json) }
+  #    end
+  #
+  #    ## write term index
+  #    filename = "_index_keys.json"
+  #    File.open("#{indexdir}/#{filename}", 'w') { |file| file.write(index_keys_singular.to_json) }
+  #  end
 
   def write_index_az
     write_to_file(@env.wiki_dir.join("index.md"), ECR.render "tpl/index.md.ecr")
@@ -119,7 +115,6 @@ class Wimpix::MdFmIndexer
       end
     end
   end
-
 
   private def filename_to_title(filepath)
     File.basename(filepath, ".md").capitalize.gsub("_", " ")

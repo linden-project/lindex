@@ -68,9 +68,7 @@ describe Wimpix do
     idx.clean_index_dir
     d = Dir.new(env.index_dir.to_s)
     d.size.should eq 2
-
   end
-
 
   it "should create a index.md file" do
     env = Wimpix::Environment.new(CONFIG_FILE, false)
@@ -85,12 +83,10 @@ describe Wimpix do
 
     include_umbrella = content.includes? "- [[Umbrella with no front matter title]]"
     include_umbrella.should be_true
-
   end
 
   it "should create l2 index files" do
     env = Wimpix::Environment.new(CONFIG_FILE, false)
     full_make_index_cycle
   end
-
 end
