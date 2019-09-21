@@ -1,6 +1,4 @@
 ---
-title_index:
-  ignore_prefix: index
 index_keys:
   type:
     singular: type

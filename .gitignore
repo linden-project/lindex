@@ -5,3 +5,4 @@
 *.dwarf
 coverage
 tmp/wimpi_index_files/_*
+spec/wimpi_db_root/wiki/index.md

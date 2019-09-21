@@ -9,5 +9,6 @@ def full_make_index_cycle
   idx = Wimpix::MdFmIndexer.new(env)
   idx.clean_index_dir
   idx.build_in_memory
+  idx.write_index_az
   idx.write_to_disk
 end

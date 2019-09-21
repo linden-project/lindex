@@ -1,12 +1,15 @@
+require "ecr"
+
 class Wimpix::MdFmIndexer
   getter env : Wimpix::Environment
 
+  @idx_h_docs_errors = {} of String => String
+  @idx_a_docs_starred = [] of String
+  @idx_a_taxonomies_singular = [] of String
+  @idx_h_docs_with_terms = Hash(String, Hash(String, String)).new
+  @idx_h_docs_with_titles = Hash(String, String).new # DEPRICIATED
+
   def initialize(@env)
-    @idx_h_docs_errors = {} of String => String
-    @idx_a_docs_starred = [] of String
-    @idx_a_taxonomies_singular = [] of String
-    @idx_h_docs_with_terms = Hash(String, Hash(String, String)).new
-    @idx_h_docs_with_titles = Hash(String, String).new # DEPRICIATED
 
     @proc_current_yaml_level = 0
     @proc_current_markdown_file = ""
@@ -42,16 +45,22 @@ class Wimpix::MdFmIndexer
     end
   end
 
+  def write_index_az
+    write_to_file(@env.wiki_dir.join("index.md"), ECR.render "tpl/index.md.ecr")
+  end
+
   private def read_markdown_files_populate_memory_index
     @files.each do |file|
-      begin
-        index_file(file)
-        if !@idx_h_docs_with_terms[File.basename(file)].has_key? "title"
-          @idx_h_docs_with_terms[File.basename(file)]["title"] = filename_to_title(file)
+      unless File.basename(file) == "index.md"
+        begin
+          index_file(file)
+          if !@idx_h_docs_with_terms[File.basename(file)].has_key? "title"
+            @idx_h_docs_with_terms[File.basename(file)]["title"] = filename_to_title(file)
+          end
+          @idx_h_docs_with_titles[File.basename(file)] = @idx_h_docs_with_terms[File.basename(file)]["title"]
+        rescue
+          p file + " could not process Front Matter."
         end
-        @idx_h_docs_with_titles[File.basename(file)] = @idx_h_docs_with_terms[File.basename(file)]["title"]
-      rescue
-        p file + " could not process Front Matter."
       end
     end
   end

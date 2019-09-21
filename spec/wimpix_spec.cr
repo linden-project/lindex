@@ -64,11 +64,22 @@ describe Wimpix do
     d = Dir.new(env.index_dir.to_s)
     (d.size > 2).should be_true
 
-    d = Dir.new(env.index_dir.to_s)
-
     idx.clean_index_dir
     d = Dir.new(env.index_dir.to_s)
     d.size.should eq 2
+
+  end
+
+  it "should create a index.md file" do
+    env = Wimpix::Environment.new(CONFIG_FILE, false)
+    FileUtils.rm env.wiki_dir.join("index.md").to_s if File.exists? env.wiki_dir.join("index.md")
+    idx = Wimpix::MdFmIndexer.new(env)
+    idx.build_in_memory
+    idx.write_index_az
+
+    content = File.read(env.wiki_dir.join("index.md"))
+    (content.includes? "- [[Butterfly]]").should be_true
+    (content.includes? "- [[Umbrella with no front matter title]]").should be_true
 
   end
 

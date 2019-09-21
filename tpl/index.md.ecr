@@ -1,0 +1,6 @@
+INDEX A-Z
+=========
+
+<% @idx_h_docs_with_terms.keys.sort.each do | document | -%>
+- [[<%= filename_to_title(document) %>]]
+<% end -%>
