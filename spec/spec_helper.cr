@@ -4,6 +4,11 @@ require "file_utils"
 require "spec"
 require "../src/wimpix"
 
+def make_tmp_dirs
+  env = Wimpix::Environment.new(CONFIG_FILE, false)
+  FileUtils.mkdir_p env.index_dir.to_s
+end
+
 def full_make_index_cycle
   env = Wimpix::Environment.new(CONFIG_FILE, false)
   idx = Wimpix::MdFmIndexer.new(env)
@@ -12,3 +17,5 @@ def full_make_index_cycle
   idx.write_index_az
   idx.write_to_disk
 end
+
+make_tmp_dirs

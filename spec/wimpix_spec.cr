@@ -38,7 +38,7 @@ describe Wimpix do
     index_docs_with_terms.as_h.size.should eq 4
     index_docs_with_terms.as_h.each do |k, v|
       File.exists?(env.wiki_dir.join(k)).should be_true
-      (v.as_h["title"].as_s != "").should be_true
+      v.as_h["title"].as_s.should_not eq ""
     end
   end
 
@@ -50,7 +50,7 @@ describe Wimpix do
     index_docs.as_h.size.should eq 4
     index_docs.as_h.each do |k, v|
       File.exists?(env.wiki_dir.join(k)).should be_true
-      (v.as_s != "").should be_true
+      v.as_s.should_not eq ""
     end
   end
 
@@ -62,13 +62,15 @@ describe Wimpix do
     idx.write_to_disk
 
     d = Dir.new(env.index_dir.to_s)
-    (d.size > 2).should be_true
+    more_than_2 = d.size > 2
+    more_than_2.should be_true
 
     idx.clean_index_dir
     d = Dir.new(env.index_dir.to_s)
     d.size.should eq 2
 
   end
+
 
   it "should create a index.md file" do
     env = Wimpix::Environment.new(CONFIG_FILE, false)
@@ -78,8 +80,11 @@ describe Wimpix do
     idx.write_index_az
 
     content = File.read(env.wiki_dir.join("index.md"))
-    (content.includes? "- [[Butterfly]]").should be_true
-    (content.includes? "- [[Umbrella with no front matter title]]").should be_true
+    include_butterfly = content.includes? "- [[Butterfly]]"
+    include_butterfly.should be_true
+
+    include_umbrella = content.includes? "- [[Umbrella with no front matter title]]"
+    include_umbrella.should be_true
 
   end
 
