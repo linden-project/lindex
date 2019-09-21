@@ -4,6 +4,7 @@ class Wimpix::Environment
 
   getter index_dir : Path
   getter wiki_dir : Path
+  getter config_dir : Path
   getter index_conf : YAML::Any
 
   def initialize(@main_config_file, @verbose)
@@ -16,9 +17,9 @@ class Wimpix::Environment
 
     @index_dir = Path[main_conf["index_files_path"].as_s].expand
     @wiki_dir = Path[main_conf["root_path"].as_s, "wiki"].expand
+    @config_dir = Path[main_conf["root_path"].as_s, "config"].expand
 
-    index_conf_file = Path[main_conf["root_path"].as_s, "config", "wiki_indexes.yml"].expand
-    @index_conf = File.open(index_conf_file) { |file| YAML.parse(file) }
+    @index_conf = File.open(@config_dir.join("wiki_indexes.yml").expand) { |file| YAML.parse(file) }
 
     pp @index_conf if @verbose
   end

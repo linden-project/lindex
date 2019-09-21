@@ -83,4 +83,9 @@ describe Wimpix do
 
   end
 
+  it "should create l2 index files" do
+    env = Wimpix::Environment.new(CONFIG_FILE, false)
+    full_make_index_cycle
+  end
+
 end
