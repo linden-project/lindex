@@ -17,16 +17,14 @@ describe Wimpix do
   end
 
   it "should create index and have valid _index_docs_starred.json" do
-    reset_tmp_dir
-    make_index
+    full_make_index_cycle
 
     starred_json = File.open(Path["tmp/wimpi_index_files/_index_docs_starred.json"].expand) { |file| JSON.parse(file) }
     starred_json.as_a.size.should eq 2
   end
 
   it "should create index and have valid _index_keys.json" do
-    reset_tmp_dir
-    make_index
+    full_make_index_cycle
 
     index_keys_json = File.open(Path["tmp/wimpi_index_files/_index_keys.json"].expand) { |file| JSON.parse(file) }
     index_keys_json.as_a.size.should eq 5
@@ -34,8 +32,7 @@ describe Wimpix do
 
   it "should create index and have valid _index_docs_with_keys.json" do
     env = Wimpix::Environment.new(CONFIG_FILE, false)
-    reset_tmp_dir
-    make_index
+    full_make_index_cycle
 
     index_docs_with_terms = File.open(Path["tmp/wimpi_index_files/_index_docs_with_keys.json"].expand) { |file| JSON.parse(file) }
     index_docs_with_terms.as_h.size.should eq 4
@@ -47,8 +44,7 @@ describe Wimpix do
 
   it "should create index and have valid _index_docs_with_title.json" do
     env = Wimpix::Environment.new(CONFIG_FILE, false)
-    reset_tmp_dir
-    make_index
+    full_make_index_cycle
 
     index_docs = File.open(Path["tmp/wimpi_index_files/_index_docs_with_title.json"].expand) { |file| JSON.parse(file) }
     index_docs.as_h.size.should eq 4
@@ -57,4 +53,23 @@ describe Wimpix do
       (v.as_s != "").should be_true
     end
   end
+
+  it "should delete all files in index_dir" do
+    env = Wimpix::Environment.new(CONFIG_FILE, false)
+    idx = Wimpix::MdFmIndexer.new(env)
+    idx.clean_index_dir
+    idx.build_in_memory
+    idx.write_to_disk
+
+    d = Dir.new(env.index_dir.to_s)
+    (d.size > 2).should be_true
+
+    d = Dir.new(env.index_dir.to_s)
+
+    idx.clean_index_dir
+    d = Dir.new(env.index_dir.to_s)
+    d.size.should eq 2
+
+  end
+
 end

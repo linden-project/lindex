@@ -15,6 +15,15 @@ class Wimpix::MdFmIndexer
     @files = validate_path_with_option(@env.wiki_dir)
   end
 
+  def clean_index_dir
+    d = Dir.new(@env.index_dir.to_s)
+    d.each do |f|
+      if f != "." && f != ".."
+        FileUtils.rm @env.index_dir.join(f).to_s
+      end
+    end
+  end
+
   def build_in_memory
     read_markdown_files_populate_memory_index
     read_taxonomies_from_conf_to_memory
