@@ -9,6 +9,8 @@ class Wimpix::MdFmIndexer
   @idx_h_docs_with_terms = Hash(String, Hash(String, String)).new
   @idx_h_docs_with_titles = Hash(String, String).new # DEPRICIATED
 
+  @idx_h_taxonomies_with_terms = Hash(String, Hash(String, Array(String))).new
+
   def initialize(@env)
     @proc_current_yaml_level = 0
     @proc_current_markdown_file = ""
@@ -28,7 +30,8 @@ class Wimpix::MdFmIndexer
 
   def build_in_memory
     read_markdown_files_populate_memory_index
-    read_taxonomies_from_conf_to_memory
+
+    write_taxonomy_terms_and_values_index_files
   end
 
   def write_to_disk
@@ -38,63 +41,43 @@ class Wimpix::MdFmIndexer
     write_to_file(@env.index_dir.join("_index_docs_with_title.json"), @idx_h_docs_with_titles.to_json) # DEPRICIATED
   end
 
-  def read_taxonomies_from_conf_to_memory
+  def write_taxonomy_terms_and_values_index_files
     @env.index_conf.as_h["index_keys"].as_h.each do |index_key, index_val|
       @idx_a_taxonomies_singular << index_val.as_h["singular"].as_s
 
-      # index_key_vals_titles = {}
       if index_val.as_h.has_key?("features") && index_val.as_h["features"].as_a.includes? "sub_index"
-        # index_key_vals_titles[index_key_val] = get_taxo_val_conf(index_key, index_key_val)
+        index_key_vals_titles = Hash(String, Hash(String, String) | YAML::Any).new
 
-        p "meer"
+        if @idx_h_taxonomies_with_terms.has_key? index_key.as_s
+          @idx_h_taxonomies_with_terms[index_key.as_s].each do |index_key_val, index_key_val_docs|
+            index_key_vals_titles[index_key_val] = get_taxo_val_conf(index_key, index_key_val)
 
-        #        @front_matter.data['index_keys'][index_key].each do | index_key_val, index_key_val_docs|
-        #        p get_taxo_val_conf(index_key, index_key_val)
+            # # write term index with values
+            write_to_file(@env.l3_index_filepath(index_key, index_key_val), index_key_val_docs.to_json)
+          end
+        end
       end
+
+      # # write taxonomy index with terms
+      write_to_file(@env.l2_index_filepath(index_key), index_key_vals_titles.to_json)
     end
+  end
+
+  def add_value_to_term_in_taxonomy_idx(taxonomy, term, item)
+    @idx_h_taxonomies_with_terms[taxonomy] = Hash(String, Array(String)).new unless @idx_h_taxonomies_with_terms.has_key? taxonomy
+    @idx_h_taxonomies_with_terms[taxonomy][term.to_s.downcase] = [] of String unless @idx_h_taxonomies_with_terms[taxonomy].has_key? term.to_s.downcase
+    @idx_h_taxonomies_with_terms[taxonomy][term.to_s.downcase] << item
   end
 
   def get_taxo_val_conf(tk, tv)
     path = @env.config_dir.join("L3-CONF_TRM_#{tk}_VAL_#{tv}.yml")
 
-    if File.exist? path
+    if File.exists? path
       File.open(path) { |file| YAML.parse(file) }
     else
-      YAML.parse(Hash.new(String, YAML::Any.new))
+      {} of String => String
     end
   end
-
-  #  def write_front_matter_sub_index_files
-  #
-  #    index_keys_singular = []
-  #
-  #    @front_matter.conf['index_keys'].each do |index_key, index_val|
-  #
-  #      index_keys_singular << index_val['singular']
-  #      index_key_vals_titles = {}
-  #
-  #      if index_val.key?('features') and index_val['features'].include? 'sub_index'
-  #
-  #        @front_matter.data['index_keys'][index_key].each do | index_key_val, index_key_val_docs|
-  #
-  #          index_key_vals_titles[index_key_val] = get_taxo_val_conf(index_key, index_key_val)
-  #
-  #          sorted_docs = index_key_val_docs.grep_v(/index_/).sort
-  #
-  #          ## write term value index
-  #          File.open( l3_index_filepath(index_key,index_key_val), 'w') { |file| file.write(sorted_docs.to_json) }
-  #
-  #        end
-  #      end
-  #
-  #      ## write term index
-  #      File.open( l2_index_filepath(index_key), 'w') { |file| file.write(index_key_vals_titles.to_json) }
-  #    end
-  #
-  #    ## write term index
-  #    filename = "_index_keys.json"
-  #    File.open("#{indexdir}/#{filename}", 'w') { |file| file.write(index_keys_singular.to_json) }
-  #  end
 
   def write_index_az
     write_to_file(@env.wiki_dir.join("index.md"), ECR.render "tpl/index.md.ecr")
@@ -129,6 +112,20 @@ class Wimpix::MdFmIndexer
         @proc_current_yaml_level = 0
         @proc_current_markdown_file = File.basename(file)
         proc_yaml(front_matter_as_yaml_any, @proc_current_yaml_level)
+
+        @env.index_conf.as_h["index_keys"].as_h.keys.each do |index_key|
+          if front_matter_as_yaml_any.as_h.has_key? index_key
+            if @env.index_conf.as_h["index_keys"].as_h[index_key]["type"] == "has_many_belong_to_many"
+              # TODO, but only the official yaml way
+              # array_val(index_key, front_matter[index_key]).each do |single_val|
+              #  add_value_to_term_in_taxonomy_idx index_key, single_val, item
+              # end
+
+            elsif @env.index_conf.as_h["index_keys"].as_h[index_key]["type"] == "has_many"
+              add_value_to_term_in_taxonomy_idx index_key.as_s, front_matter_as_yaml_any.as_h[index_key], @proc_current_markdown_file
+            end
+          end
+        end
       end
     rescue
       @idx_h_docs_errors[file] = "error in front matter"
