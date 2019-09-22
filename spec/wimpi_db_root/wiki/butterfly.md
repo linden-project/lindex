@@ -1,9 +1,10 @@
 ---
 title: butterfly
 category: insects
-customer: God
+customer: god
 project: Earth
 starred: true
+type: two
 ---
 
 Butterflies are insects in the macrolepidopteran clade Rhopalocera from the

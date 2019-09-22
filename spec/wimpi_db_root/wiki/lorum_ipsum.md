@@ -3,6 +3,7 @@ title: Lorum Ipsum
 customer: Caesar
 archived: false
 category: fake
+type: one
 ---
 
 # Adire sparsurus muta numine ut postquam nullo
