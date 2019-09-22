@@ -2,7 +2,7 @@
 category: wet prevention object
 project: human health
 word: down
-type: one
+type: Two
 ---
 
 # Umbrella with no ...

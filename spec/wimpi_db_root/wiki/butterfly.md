@@ -1,7 +1,7 @@
 ---
 title: butterfly
 category: insects
-customer: god
+customer: The Zoo
 project: Earth
 starred: true
 type: two
