@@ -5,10 +5,10 @@ class Wimpix::MdFmIndexer
 
   @idx_h_docs_errors = {} of String => String
   @idx_a_docs_starred = [] of String
+  @idx_a_terms_starred = Array(Hash(String, String)).new
   @idx_a_taxonomies_singular = [] of String
   @idx_h_docs_with_terms = Hash(String, Hash(String, String)).new
   @idx_h_docs_with_titles = Hash(String, String).new # DEPRICIATED
-
   @idx_h_taxonomies_with_terms = Hash(String, Hash(String, Array(String))).new
 
   def initialize(@env)
@@ -30,7 +30,6 @@ class Wimpix::MdFmIndexer
 
   def build_in_memory
     read_markdown_files_populate_memory_index
-
     write_taxonomy_terms_and_values_index_files
   end
 
@@ -39,18 +38,63 @@ class Wimpix::MdFmIndexer
     write_to_file(@env.index_dir.join("_index_docs_starred.json"), @idx_a_docs_starred.to_json)
     write_to_file(@env.index_dir.join("_index_docs_with_keys.json"), @idx_h_docs_with_terms.to_json)
     write_to_file(@env.index_dir.join("_index_docs_with_title.json"), @idx_h_docs_with_titles.to_json) # DEPRICIATED
+    write_to_file(@env.index_dir.join("_index_term_values_starred.json"), @idx_a_terms_starred.to_json)
   end
+
+  #  def write_starred_term_values
+  #    starred = []
+  #    Dir.glob("#{@wimpiroot}/config/L3-CONF_TRM_*.yml").each do |file|
+  #
+  #      conf = YAML.load_file(file)
+  #
+  #      if(conf['starred'])
+  #        #cnf_idx_type_doen.yml
+  #        #L3-CONF_TRM_project_VAL_word vervangen met tex.yml
+  #        term, val = File.basename(file, ".yml")[12..-1].split('_VAL_')
+  #        starred << {"term":term, "val": val}
+  #      end
+  #    end
+  #
+  #    filename = "_index_term_values_starred.json"
+  #
+  #    File.open("#{indexdir}/#{filename}", 'w') { |file| file.write(starred.to_json) }
+  #  end
 
   def write_taxonomy_terms_and_values_index_files
     @env.index_conf.as_h["index_keys"].as_h.each do |index_key, index_val|
       @idx_a_taxonomies_singular << index_val.as_h["singular"].as_s
 
       if index_val.as_h.has_key?("features") && index_val.as_h["features"].as_a.includes? "sub_index"
-        index_key_vals_titles = Hash(String, Hash(String, String) | YAML::Any).new
+        #index_key_vals_titles = Hash(String, Hash(String, String) | YAML::Any).new
+        index_key_vals_titles = Hash(String, YAML::Any).new
 
         if @idx_h_taxonomies_with_terms.has_key? index_key.as_s
           @idx_h_taxonomies_with_terms[index_key.as_s].each do |index_key_val, index_key_val_docs|
             index_key_vals_titles[index_key_val] = get_taxo_val_conf(index_key, index_key_val)
+
+            begin
+              case index_key_vals_titles[index_key_val].raw
+              when Hash
+                if index_key_vals_titles[index_key_val].as_h.has_key? "starred"
+
+                  @idx_a_terms_starred << {"term" => index_key.as_s, "val" => index_key_val}
+                  #= Array(Hash(String, String)).new
+
+                  #      if(conf['starred'])
+                  #        #cnf_idx_type_doen.yml
+                  #        #L3-CONF_TRM_project_VAL_word vervangen met tex.yml
+                  #        term, val = File.basename(file, ".yml")[12..-1].split('_VAL_')
+                  #        starred << {"term":term, "val": val}
+                  #      end
+
+                  #p "jo"
+                end
+              end
+            rescue
+            end
+
+            #if index_key_vals_titles[index_key_val].as_h.has_key? "starred"
+            #end
 
             # # write term index with values
             write_to_file(@env.l3_index_filepath(index_key, index_key_val), index_key_val_docs.to_json)
@@ -75,7 +119,7 @@ class Wimpix::MdFmIndexer
     if File.exists? path
       File.open(path) { |file| YAML.parse(file) }
     else
-      {} of String => String
+      YAML::Any.new("")
     end
   end
 
