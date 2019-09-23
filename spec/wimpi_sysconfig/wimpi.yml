@@ -1,4 +1,5 @@
 ---
-root_path: spec/wimpi_db_root
+#root_path: spec/wimpi_db_root
+root_path: ~/Dropbox/Apps/KiwiApp
 index_files_path: tmp/wimpi_index_files
 

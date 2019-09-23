@@ -1,4 +1,5 @@
 require "commander"
+require "file_utils"
 require "yaml"
 require "json"
 require "front_matter"
@@ -28,7 +29,7 @@ cli = Commander::Command.new do |cmd|
       flag.name = "conf_path"
       flag.short = "-c"
       flag.long = "--config"
-      flag.default = "~/.wimpi/wimpi.yml"
+      flag.default = "~/.wimpi/wimpix.yml"
       flag.description = "alternative path to config file."
     end
 
@@ -43,6 +44,12 @@ cli = Commander::Command.new do |cmd|
 
       env = Wimpix::Environment.new(options.string["conf_path"], options.bool["verbose"])
       idx = Wimpix::MdFmIndexer.new(env)
+
+      idx.clean_index_dir
+      idx.build_in_memory
+      idx.write_index_az
+      idx.write_to_disk
+
     end
   end
 end

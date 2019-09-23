@@ -101,9 +101,19 @@ class Wimpix::MdFmIndexer
           if !@idx_h_docs_with_terms[File.basename(file)].has_key? "title"
             @idx_h_docs_with_terms[File.basename(file)]["title"] = filename_to_title(file)
           end
+
           @idx_h_docs_with_titles[File.basename(file)] = @idx_h_docs_with_terms[File.basename(file)]["title"] # DEPRICIATED
+
+          add_value_to_term_in_taxonomy_idx "front_matter", "valid", @proc_current_markdown_file
+          @idx_h_docs_with_terms[File.basename(file)]["front_matter"] = "valid"
         rescue
-          p file + " could not process Front Matter."
+          # GEEN GELDIGE FRONTMATTER
+          @idx_h_docs_with_terms[File.basename(file)] = {"title" => filename_to_title(file)}
+
+          @idx_h_docs_with_titles[File.basename(file)] = @idx_h_docs_with_terms[File.basename(file)]["title"] # DEPRICIATED
+
+          @idx_h_docs_with_terms[File.basename(file)]["front_matter"] = "invalid"
+          add_value_to_term_in_taxonomy_idx "front_matter", "invalid", @proc_current_markdown_file
         end
       end
     end
