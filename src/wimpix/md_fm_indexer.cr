@@ -52,17 +52,13 @@ class Wimpix::MdFmIndexer
           @idx_h_taxonomies_with_terms[index_key.as_s].each do |index_key_val, index_key_val_docs|
             index_key_vals_titles[index_key_val] = get_taxo_val_conf(index_key, index_key_val)
 
-            begin
-              case index_key_vals_titles[index_key_val].raw
-              when Hash
-                if index_key_vals_titles[index_key_val].as_h.has_key? "starred"
-                  @idx_a_terms_starred << {"term" => index_key.as_s, "val" => index_key_val}
-                end
+            if index_key_vals_titles[index_key_val].size > 0
+              if index_key_vals_titles[index_key_val].as_h.has_key? "starred"
+                @idx_a_terms_starred << {"term" => index_key.as_s, "val" => index_key_val}
               end
-            rescue
             end
 
-            # # write term index with values
+            # write term index with values
             write_to_file(@env.l3_index_filepath(index_key, index_key_val), index_key_val_docs.to_json)
           end
         end
@@ -85,7 +81,7 @@ class Wimpix::MdFmIndexer
     if File.exists? path
       File.open(path) { |file| YAML.parse(file) }
     else
-      YAML::Any.new("")
+      YAML::Any.new({} of YAML::Any => YAML::Any)
     end
   end
 
