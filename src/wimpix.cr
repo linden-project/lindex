@@ -49,7 +49,6 @@ cli = Commander::Command.new do |cmd|
       idx.build_in_memory
       idx.write_index_az
       idx.write_to_disk
-
     end
   end
 end
