@@ -13,7 +13,7 @@ class Lindex::Environment
     raise "FATAL 1ST CONF: #{filename}" unless File.exists?(filename)
 
     main_conf = File.open(filename) { |file| YAML.parse(file) }
-    #linny_root = Path[main_conf["root_path"].as_s].expand
+    # linny_root = Path[main_conf["root_path"].as_s].expand
 
     @index_dir = Path[main_conf["index_files_path"].as_s].expand
     @wiki_dir = Path[main_conf["root_path"].as_s, "wiki"].expand
