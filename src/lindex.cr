@@ -3,14 +3,14 @@ require "file_utils"
 require "yaml"
 require "json"
 require "front_matter"
-require "./wimpix/*"
+require "./lindex/*"
 
 module Commander
 end
 
 cli = Commander::Command.new do |cmd|
-  cmd.use = "wimpix"
-  cmd.long = "wimpi indexer"
+  cmd.use = "lindex"
+  cmd.long = "Linny Indexer"
 
   cmd.run do |options, arguments|
     puts cmd.help # => Render help screen
@@ -29,7 +29,7 @@ cli = Commander::Command.new do |cmd|
       flag.name = "conf_path"
       flag.short = "-c"
       flag.long = "--config"
-      flag.default = "~/.wimpi/wimpix.yml"
+      flag.default = "~/.lindex.yml"
       flag.description = "alternative path to config file."
     end
 
@@ -42,8 +42,8 @@ cli = Commander::Command.new do |cmd|
         p arguments
       end
 
-      env = Wimpix::Environment.new(options.string["conf_path"], options.bool["verbose"])
-      idx = Wimpix::MdFmIndexer.new(env)
+      env = Lindex::Environment.new(options.string["conf_path"], options.bool["verbose"])
+      idx = Lindex::MdFmIndexer.new(env)
 
       idx.clean_index_dir
       idx.build_in_memory

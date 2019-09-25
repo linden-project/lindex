@@ -1,0 +1,13 @@
+class lindex < Formula
+  desc "lindex, markdown document database indexer"
+  version "<%= version %>"
+  homepage "https://github.com/mipmip/lindex"
+  url "https://github.com/mipmip/lindex/archive/v#{version}.tar.gz"
+  sha256 "<%= sha %>"
+  depends_on "crystal-lang"
+
+  def install
+    system "shards install && make"
+    bin.install "bin/lindex"
+  end
+end

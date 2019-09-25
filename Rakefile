@@ -1,6 +1,6 @@
 require 'rake/clean'
 
-PRODUCT_NAME="wimpix"
+PRODUCT_NAME="lindex"
 
 if ENV.key?('CRYSTAL_BIN')
   _crystal_path = `#{ENV['CRYSTAL_BIN']} env | grep CRYSTAL_PATH | cut -d'"' -f2`.gsub("\n",'')
@@ -30,10 +30,10 @@ task :brew_formula do
 
   shard = YAML.load_file('shard.yml')
 
-  system("cd /tmp && wget https://github.com/mipmip/wimpix/archive/v#{shard['version']}.tar.gz")
+  system("cd /tmp && wget https://github.com/mipmip/lindex/archive/v#{shard['version']}.tar.gz")
   sha = `shasum --algorithm 256 /tmp/v#{shard['version']}.tar.gz|cut -d" " -f1`.gsub("\n","")
 
-  template = File.read('brew/wimpix.rb.erb')
+  template = File.read('brew/lindex.rb.erb')
   namespace = OpenStruct.new(
     sha: sha,
     desc: shard['desc'],
@@ -41,8 +41,8 @@ task :brew_formula do
   )
 
   result = ERB.new(template).result(namespace.instance_eval { binding })
-  File.open("/Users/pim/RnD/homebrew-crystal/wimpix.rb", 'w') { |file| file.write(result)}
+  File.open("/Users/pim/RnD/homebrew-crystal/lindex.rb", 'w') { |file| file.write(result)}
 
-  system("cd ~/RnD/homebrew-crystal && git commit -m 'wimpix release #{shard['version']}' -a && git push")
+  system("cd ~/RnD/homebrew-crystal && git commit -m 'lindex release #{shard['version']}' -a && git push")
 
 end

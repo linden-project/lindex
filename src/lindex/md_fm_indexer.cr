@@ -1,7 +1,7 @@
 require "ecr"
 
-class Wimpix::MdFmIndexer
-  getter env : Wimpix::Environment
+class Lindex::MdFmIndexer
+  getter env : Lindex::Environment
 
   @idx_h_docs_errors = {} of String => String
   @idx_a_docs_starred = [] of String

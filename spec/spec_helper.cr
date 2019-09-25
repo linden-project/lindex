@@ -2,16 +2,16 @@ TESTING = true
 
 require "file_utils"
 require "spec"
-require "../src/wimpix"
+require "../src/lindex"
 
 def make_tmp_dirs
-  env = Wimpix::Environment.new(CONFIG_FILE, false)
+  env = Lindex::Environment.new(CONFIG_FILE, false)
   FileUtils.mkdir_p env.index_dir.to_s
 end
 
 def full_make_index_cycle
-  env = Wimpix::Environment.new(CONFIG_FILE, false)
-  idx = Wimpix::MdFmIndexer.new(env)
+  env = Lindex::Environment.new(CONFIG_FILE, false)
+  idx = Lindex::MdFmIndexer.new(env)
   idx.clean_index_dir
   idx.build_in_memory
   idx.write_index_az

@@ -1,4 +1,4 @@
-name: wimpix
+name: lindex
 version: 0.1.4
 
 license: MIT
@@ -7,8 +7,8 @@ authors:
   - Pim Snel <pim@lingewoud.nl>
 
 targets:
-  wimpix:
-    main: src/wimpix.cr
+  lindex:
+    main: src/lindex.cr
 
 crystal: 0.30.1
 

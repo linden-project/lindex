@@ -1,9 +1,9 @@
-# wimpix, a markdown document database indexer
+# lindex, a markdown document database indexer
 
-[![GitHub release](https://img.shields.io/github/release/mipmip/wimpix.svg)](https://github.com/mipmip/wimpix/releases)
-[![Build Status](https://travis-ci.org/mipmip/wimpix.svg?branch=master)](https://travis-ci.org/mipmip/wimpix)
+[![GitHub release](https://img.shields.io/github/release/mipmip/lindex.svg)](https://github.com/mipmip/lindex/releases)
+[![Build Status](https://travis-ci.org/mipmip/lindex.svg?branch=master)](https://travis-ci.org/mipmip/lindex)
 
-Wimpix is a markdown document database indexer.
+Lindex is a markdown document database indexer.
 
 ## Features
 WIP
@@ -13,7 +13,7 @@ WIP
 ### With Homebrew
 
 1. brew tap mipmip/homebrew-crystal
-1. brew install wimpix
+1. brew install lindex
 
 ### With Snap (Linux)
 
@@ -21,8 +21,8 @@ WIP
 
 ### From Source
 
-1. git clone https://github.com/mipmip/wimpix
-1. cd wimpix
+1. git clone https://github.com/mipmip/lindex
+1. cd lindex
 1. make
 
 ## Usage
@@ -47,7 +47,7 @@ make build
 
 ## Contributing
 
-1. Fork it (<https://github.com/mipmip/wimpix/fork>)
+1. Fork it (<https://github.com/mipmip/lindex/fork>)
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
