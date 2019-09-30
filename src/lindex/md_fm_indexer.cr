@@ -7,7 +7,7 @@ class Lindex::MdFmIndexer
   @idx_a_docs_starred = [] of String
   @idx_a_terms_starred = Array(Hash(String, String)).new
   @idx_a_taxonomies_singular = [] of String
-  @idx_h_docs_with_terms = Hash(String, Hash(String, String)).new
+  @idx_h_docs_with_terms = Hash(String, Hash(String, YAML::Any)).new
   @idx_h_docs_with_titles = Hash(String, String).new # DEPRICIATED
   @idx_h_taxonomies_with_terms = Hash(String, Hash(String, Array(String))).new
 
@@ -95,20 +95,20 @@ class Lindex::MdFmIndexer
         begin
           index_file(file)
           if !@idx_h_docs_with_terms[File.basename(file)].has_key? "title"
-            @idx_h_docs_with_terms[File.basename(file)]["title"] = filename_to_title(file)
+            @idx_h_docs_with_terms[File.basename(file)]["title"] = YAML::Any.new(filename_to_title(file))
           end
 
-          @idx_h_docs_with_titles[File.basename(file)] = @idx_h_docs_with_terms[File.basename(file)]["title"] # DEPRICIATED
+          @idx_h_docs_with_titles[File.basename(file)] = @idx_h_docs_with_terms[File.basename(file)]["title"].as_s # DEPRICIATED
 
           add_value_to_term_in_taxonomy_idx "front_matter", "valid", @proc_current_markdown_file
-          @idx_h_docs_with_terms[File.basename(file)]["front_matter"] = "valid"
+          @idx_h_docs_with_terms[File.basename(file)]["front_matter"] = YAML::Any.new("valid")
         rescue
           # GEEN GELDIGE FRONTMATTER
-          @idx_h_docs_with_terms[File.basename(file)] = {"title" => filename_to_title(file)}
+          @idx_h_docs_with_terms[File.basename(file)] = {"title" => YAML::Any.new(filename_to_title(file))}
 
-          @idx_h_docs_with_titles[File.basename(file)] = @idx_h_docs_with_terms[File.basename(file)]["title"] # DEPRICIATED
+          @idx_h_docs_with_titles[File.basename(file)] = @idx_h_docs_with_terms[File.basename(file)]["title"].as_s # DEPRICIATED
 
-          @idx_h_docs_with_terms[File.basename(file)]["front_matter"] = "invalid"
+          @idx_h_docs_with_terms[File.basename(file)]["front_matter"] = YAML::Any.new("invalid")
           add_value_to_term_in_taxonomy_idx "front_matter", "invalid", @proc_current_markdown_file
         end
       end
@@ -158,6 +158,8 @@ class Lindex::MdFmIndexer
 
   private def proc_yaml(node : YAML::Any, level : Int)
     case node.raw
+    when Bool
+      return YAML::Any.new(node.raw)
     when String
       return YAML::Any.new(node.as_s)
     when Array(YAML::Any)
@@ -180,6 +182,7 @@ class Lindex::MdFmIndexer
 
       return YAML::Any.new(new_node)
     else
+      p node
       return node
     end
   end
@@ -192,11 +195,29 @@ class Lindex::MdFmIndexer
 
   private def proc_node_index_terms_in_document(key, value)
     case value.raw
+    when Float64
+      if @idx_h_docs_with_terms.has_key? @proc_current_markdown_file
+        @idx_h_docs_with_terms[@proc_current_markdown_file][key.as_s] = value
+      else
+        @idx_h_docs_with_terms[@proc_current_markdown_file] = {key.as_s => value}
+      end
+    when Int64
+      if @idx_h_docs_with_terms.has_key? @proc_current_markdown_file
+        @idx_h_docs_with_terms[@proc_current_markdown_file][key.as_s] = value
+      else
+        @idx_h_docs_with_terms[@proc_current_markdown_file] = {key.as_s => value}
+      end
+    when Bool
+      if @idx_h_docs_with_terms.has_key? @proc_current_markdown_file
+        @idx_h_docs_with_terms[@proc_current_markdown_file][key.as_s] = value
+      else
+        @idx_h_docs_with_terms[@proc_current_markdown_file] = {key.as_s => value}
+      end
     when String
       if @idx_h_docs_with_terms.has_key? @proc_current_markdown_file
-        @idx_h_docs_with_terms[@proc_current_markdown_file][key.as_s] = value.as_s
+        @idx_h_docs_with_terms[@proc_current_markdown_file][key.as_s] = YAML::Any.new(value.as_s)
       else
-        @idx_h_docs_with_terms[@proc_current_markdown_file] = {key.as_s => value.as_s}
+        @idx_h_docs_with_terms[@proc_current_markdown_file] = {key.as_s => YAML::Any.new(value.as_s)}
       end
     end
   end

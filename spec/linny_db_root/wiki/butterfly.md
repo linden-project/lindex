@@ -5,6 +5,8 @@ customer: The Zoo
 project: Earth
 starred: true
 type: two
+integer: 4
+float: 4.3
 ---
 
 Butterflies are insects in the macrolepidopteran clade Rhopalocera from the
