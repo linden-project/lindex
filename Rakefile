@@ -13,8 +13,7 @@ task :default => :build
 
 desc "build"
 task :build do
-  puts "Current CRYSTAL_BIN is #{CRYSTAL_BIN}"
-  system "#{CRYSTAL_BIN} build src/#{PRODUCT_NAME}.cr"
+  puts "please use 'make build'"
 end
 
 desc "release"
