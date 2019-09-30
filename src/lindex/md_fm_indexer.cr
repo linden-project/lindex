@@ -10,14 +10,26 @@ class Lindex::MdFmIndexer
   @idx_h_docs_with_terms = Hash(String, Hash(String, YAML::Any)).new
   @idx_h_docs_with_titles = Hash(String, String).new # DEPRICIATED
   @idx_h_taxonomies_with_terms = Hash(String, Hash(String, Array(String))).new
+  @idx_h_lindex_self_info = Hash(String, String).new
 
   def initialize(@env)
     @proc_current_yaml_level = 0
     @proc_current_markdown_file = ""
 
+    build_machine_info
+    lindex_self_info
+
     @files = [] of String
     @files = validate_path_with_option(@env.wiki_dir)
   end
+
+  macro define_method(name, content)
+    def {{name}}
+      {"uname" => "{{`uname -a`}}", "crystal" => "{{`crystal -v`}}"}
+    end
+  end
+
+  define_method(build_machine_info, "")
 
   def clean_index_dir
     d = Dir.new(@env.index_dir.to_s)
@@ -33,12 +45,26 @@ class Lindex::MdFmIndexer
     write_taxonomy_terms_and_values_index_files
   end
 
+  def lindex_self_info
+    comp_info = build_machine_info["crystal"].split("\n")
+
+    @idx_h_lindex_self_info["product_name"] = "Lindex"
+    @idx_h_lindex_self_info["product_version"] = Lindex::VERSION
+    @idx_h_lindex_self_info["build_machine"] = build_machine_info["uname"].gsub("\n", "")
+    @idx_h_lindex_self_info["crystal_version"] = comp_info[0]
+    @idx_h_lindex_self_info["llvm"] = comp_info[2]
+    @idx_h_lindex_self_info["index_dir"] = @env.index_dir.to_s
+    @idx_h_lindex_self_info["wiki_dir"] = @env.wiki_dir.to_s
+    @idx_h_lindex_self_info["config_dir"] = @env.config_dir.to_s
+  end
+
   def write_to_disk
     write_to_file(@env.index_dir.join("_index_keys.json"), @idx_a_taxonomies_singular.to_json)
     write_to_file(@env.index_dir.join("_index_docs_starred.json"), @idx_a_docs_starred.to_json)
     write_to_file(@env.index_dir.join("_index_docs_with_keys.json"), @idx_h_docs_with_terms.to_json)
     write_to_file(@env.index_dir.join("_index_docs_with_title.json"), @idx_h_docs_with_titles.to_json) # DEPRICIATED
     write_to_file(@env.index_dir.join("_index_term_values_starred.json"), @idx_a_terms_starred.to_json)
+    write_to_file(@env.index_dir.join("_indexer_info.json"), @idx_h_lindex_self_info.to_json)
   end
 
   def write_taxonomy_terms_and_values_index_files
@@ -182,7 +208,6 @@ class Lindex::MdFmIndexer
 
       return YAML::Any.new(new_node)
     else
-      p node
       return node
     end
   end

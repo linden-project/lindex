@@ -17,6 +17,19 @@ cli = Commander::Command.new do |cmd|
   end
 
   cmd.commands.add do |cmd|
+    cmd.use = "version"
+    cmd.short = "show version"
+    cmd.long = cmd.short
+    cmd.run do |options, arguments|
+      print "Lindex " + Lindex::VERSION + "\n"
+      print "============\n\n"
+      print "  Compiled on: " + Lindex::BuildInfo.build_machine_info["uname"]
+      print "      Crystal: " + Lindex::BuildInfo.build_machine_info["crystal"].split("\n")[0] + "\n"
+      print "         LLVM: " + Lindex::BuildInfo.build_machine_info["crystal"].split("\n")[2] + "\n"
+    end
+  end
+
+  cmd.commands.add do |cmd|
     cmd.flags.add do |flag|
       flag.name = "verbose"
       flag.short = "-v"
