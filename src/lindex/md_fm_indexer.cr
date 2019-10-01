@@ -160,16 +160,14 @@ class Lindex::MdFmIndexer
             if @env.index_conf.as_h["index_keys"].as_h[index_key]["type"] == "has_many_belong_to_many"
               case front_matter_as_yaml_any.as_h[index_key].raw
               when Array(YAML::Any)
-                front_matter_as_yaml_any.as_h[index_key].as_a.each do | single_val |
+                front_matter_as_yaml_any.as_h[index_key].as_a.each do |single_val|
                   add_value_to_term_in_taxonomy_idx index_key.as_s, single_val, @proc_current_markdown_file
                 end
-
               when Hash(YAML::Any, YAML::Any)
                 # Do nothing
               else
                 add_value_to_term_in_taxonomy_idx index_key.as_s, front_matter_as_yaml_any.as_h[index_key], @proc_current_markdown_file
               end
-
             elsif @env.index_conf.as_h["index_keys"].as_h[index_key]["type"] == "has_many"
               add_value_to_term_in_taxonomy_idx index_key.as_s, front_matter_as_yaml_any.as_h[index_key], @proc_current_markdown_file
             end
