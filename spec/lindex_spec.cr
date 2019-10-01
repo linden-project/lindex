@@ -27,7 +27,7 @@ describe Lindex do
     full_make_index_cycle
 
     index_keys_json = File.open(Path["tmp/index_files/_index_keys.json"].expand) { |file| JSON.parse(file) }
-    index_keys_json.as_a.size.should eq 5
+    index_keys_json.as_a.size.should eq 6
   end
 
   it "should create index and have valid _index_docs_with_keys.json" do
@@ -35,7 +35,7 @@ describe Lindex do
     full_make_index_cycle
 
     index_docs_with_terms = File.open(Path["tmp/index_files/_index_docs_with_keys.json"].expand) { |file| JSON.parse(file) }
-    index_docs_with_terms.as_h.size.should eq 5
+    index_docs_with_terms.as_h.size.should eq 6
     index_docs_with_terms.as_h.each do |k, v|
       File.exists?(env.wiki_dir.join(k)).should be_true
       v.as_h["title"].as_s.should_not eq ""
@@ -47,7 +47,7 @@ describe Lindex do
     full_make_index_cycle
 
     index_docs = File.open(Path["tmp/index_files/_index_docs_with_title.json"].expand) { |file| JSON.parse(file) }
-    index_docs.as_h.size.should eq 5
+    index_docs.as_h.size.should eq 6
     index_docs.as_h.each do |k, v|
       File.exists?(env.wiki_dir.join(k)).should be_true
       v.as_s.should_not eq ""

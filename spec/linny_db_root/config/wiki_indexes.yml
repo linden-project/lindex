@@ -15,6 +15,13 @@ index_keys:
     top_level: true
     features:
       - sub_index
+  material:
+    singular: material
+    plural: materials
+    type: has_many_belong_to_many
+    top_level: true
+    features:
+      - sub_index
   customer:
     singular: customer
     plural: customers

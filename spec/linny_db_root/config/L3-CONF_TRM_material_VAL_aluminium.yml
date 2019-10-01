@@ -1,0 +1,8 @@
+---
+title: Aluminium
+infotext: About aluminium
+views:
+  type:
+    group_by: type
+locations:
+  #website: https://www.aluminium.vim
