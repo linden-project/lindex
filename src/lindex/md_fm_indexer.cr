@@ -158,10 +158,17 @@ class Lindex::MdFmIndexer
         @env.index_conf.as_h["index_keys"].as_h.keys.each do |index_key|
           if front_matter_as_yaml_any.as_h.has_key? index_key
             if @env.index_conf.as_h["index_keys"].as_h[index_key]["type"] == "has_many_belong_to_many"
-              # TODO, but only the official yaml way
-              # array_val(index_key, front_matter[index_key]).each do |single_val|
-              #  add_value_to_term_in_taxonomy_idx index_key, single_val, item
-              # end
+              case front_matter_as_yaml_any.as_h[index_key].raw
+              when Array(YAML::Any)
+                front_matter_as_yaml_any.as_h[index_key].as_a.each do | single_val |
+                  add_value_to_term_in_taxonomy_idx index_key.as_s, single_val, @proc_current_markdown_file
+                end
+
+              when Hash(YAML::Any, YAML::Any)
+                # Do nothing
+              else
+                add_value_to_term_in_taxonomy_idx index_key.as_s, front_matter_as_yaml_any.as_h[index_key], @proc_current_markdown_file
+              end
 
             elsif @env.index_conf.as_h["index_keys"].as_h[index_key]["type"] == "has_many"
               add_value_to_term_in_taxonomy_idx index_key.as_s, front_matter_as_yaml_any.as_h[index_key], @proc_current_markdown_file
@@ -197,6 +204,7 @@ class Lindex::MdFmIndexer
       return YAML::Any.new(new_node)
     when Hash(YAML::Any, YAML::Any)
       new_node = {} of YAML::Any => YAML::Any
+
       node.as_h.each do |key, value|
         if level == 0
           proc_node_index_starred_document(key, value)
@@ -219,31 +227,10 @@ class Lindex::MdFmIndexer
   end
 
   private def proc_node_index_terms_in_document(key, value)
-    case value.raw
-    when Float64
-      if @idx_h_docs_with_terms.has_key? @proc_current_markdown_file
-        @idx_h_docs_with_terms[@proc_current_markdown_file][key.as_s] = value
-      else
-        @idx_h_docs_with_terms[@proc_current_markdown_file] = {key.as_s => value}
-      end
-    when Int64
-      if @idx_h_docs_with_terms.has_key? @proc_current_markdown_file
-        @idx_h_docs_with_terms[@proc_current_markdown_file][key.as_s] = value
-      else
-        @idx_h_docs_with_terms[@proc_current_markdown_file] = {key.as_s => value}
-      end
-    when Bool
-      if @idx_h_docs_with_terms.has_key? @proc_current_markdown_file
-        @idx_h_docs_with_terms[@proc_current_markdown_file][key.as_s] = value
-      else
-        @idx_h_docs_with_terms[@proc_current_markdown_file] = {key.as_s => value}
-      end
-    when String
-      if @idx_h_docs_with_terms.has_key? @proc_current_markdown_file
-        @idx_h_docs_with_terms[@proc_current_markdown_file][key.as_s] = YAML::Any.new(value.as_s)
-      else
-        @idx_h_docs_with_terms[@proc_current_markdown_file] = {key.as_s => YAML::Any.new(value.as_s)}
-      end
+    if @idx_h_docs_with_terms.has_key? @proc_current_markdown_file
+      @idx_h_docs_with_terms[@proc_current_markdown_file][key.as_s] = value
+    else
+      @idx_h_docs_with_terms[@proc_current_markdown_file] = {key.as_s => value}
     end
   end
 
