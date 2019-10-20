@@ -23,18 +23,18 @@ describe Lindex do
     starred_json.as_a.size.should eq 2
   end
 
-  it "should create index and have valid _index_keys.json" do
+  it "should create index and have valid _index_taxonomies" do
     full_make_index_cycle
 
-    index_keys_json = File.open(Path["tmp/index_files/_index_keys.json"].expand) { |file| JSON.parse(file) }
+    index_keys_json = File.open(Path["tmp/index_files/_index_taxonomies.json"].expand) { |file| JSON.parse(file) }
     index_keys_json.as_a.size.should eq 6
   end
 
-  it "should create index and have valid _index_docs_with_keys.json" do
+  it "should create index and have valid _index_docs_with_props" do
     env = Lindex::Environment.new(CONFIG_FILE, false)
     full_make_index_cycle
 
-    index_docs_with_terms = File.open(Path["tmp/index_files/_index_docs_with_keys.json"].expand) { |file| JSON.parse(file) }
+    index_docs_with_terms = File.open(Path["tmp/index_files/_index_docs_with_props.json"].expand) { |file| JSON.parse(file) }
     index_docs_with_terms.as_h.size.should eq 6
     index_docs_with_terms.as_h.each do |k, v|
       File.exists?(env.wiki_dir.join(k)).should be_true

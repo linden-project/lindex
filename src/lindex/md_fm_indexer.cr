@@ -59,9 +59,9 @@ class Lindex::MdFmIndexer
   end
 
   def write_to_disk
-    write_to_file(@env.index_dir.join("_index_keys.json"), @idx_a_taxonomies_singular.to_json)
+    write_to_file(@env.index_dir.join("_index_taxonomies.json"), @idx_a_taxonomies_singular.to_json)
     write_to_file(@env.index_dir.join("_index_docs_starred.json"), @idx_a_docs_starred.to_json)
-    write_to_file(@env.index_dir.join("_index_docs_with_keys.json"), @idx_h_docs_with_terms.to_json)
+    write_to_file(@env.index_dir.join("_index_docs_with_props.json"), @idx_h_docs_with_terms.to_json)
     write_to_file(@env.index_dir.join("_index_docs_with_title.json"), @idx_h_docs_with_titles.to_json) # DEPRICIATED
     write_to_file(@env.index_dir.join("_index_terms_starred.json"), @idx_a_terms_starred.to_json)
     write_to_file(@env.index_dir.join("_indexer_info.json"), @idx_h_lindex_self_info.to_json)
@@ -103,7 +103,7 @@ class Lindex::MdFmIndexer
   end
 
   def get_taxo_term_conf(tax, term)
-    path = @env.config_dir.join("L2-CONF-TAX-#{tax}-TRM-{term}.yml")
+    path = @env.config_dir.join("L2-CONF-TAX-#{tax}-TRM-#{term}.yml")
 
     if File.exists? path
       File.open(path) { |file| YAML.parse(file) }
