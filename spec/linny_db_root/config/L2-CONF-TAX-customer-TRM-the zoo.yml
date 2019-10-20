@@ -1,6 +1,6 @@
 ---
 title: The zoo
-infotext: About the zoo
+description: About the zoo
 views:
   type:
     group_by: type

@@ -1,6 +1,6 @@
 ---
-title: Aluminium
-infotext: About aluminium
+title: aluminium
+description: About aluminium
 views:
   type:
     group_by: type

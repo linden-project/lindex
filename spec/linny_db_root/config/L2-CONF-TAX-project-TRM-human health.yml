@@ -2,7 +2,7 @@
 starred: true
 type: Biology
 title: Human health
-infotext: About human health
+description: About human health
 views:
   type:
     group_by: type

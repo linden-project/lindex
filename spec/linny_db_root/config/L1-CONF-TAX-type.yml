@@ -1,0 +1,7 @@
+---
+singular: type
+plural: types
+description: Type of document
+views:
+  type:
+    group_by: type

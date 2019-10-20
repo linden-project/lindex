@@ -1,7 +1,7 @@
 ---
 type: planet
 title: Earth
-infotext: Nice friendly planet
+description: Nice friendly planet
 views:
   type:
     group_by: type

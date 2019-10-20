@@ -1,6 +1,6 @@
 ---
 title: Two
-infotext: About two
+description: About two
 views:
   type:
     group_by: type

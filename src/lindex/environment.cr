@@ -10,16 +10,15 @@ class Lindex::Environment
   def initialize(@main_config_file, @verbose)
     filename = Path[@main_config_file].expand
 
-    raise "FATAL 1ST CONF: #{filename}" unless File.exists?(filename)
+    raise "FATAL L0 ROOT CONF: #{filename}" unless File.exists?(filename)
 
     main_conf = File.open(filename) { |file| YAML.parse(file) }
-    # linny_root = Path[main_conf["root_path"].as_s].expand
 
     @index_dir = Path[main_conf["index_files_path"].as_s].expand
     @wiki_dir = Path[main_conf["root_path"].as_s, "wiki"].expand
     @config_dir = Path[main_conf["root_path"].as_s, "config"].expand
 
-    @index_conf = File.open(@config_dir.join("wiki_indexes.yml").expand) { |file| YAML.parse(file) }
+    @index_conf = File.open(@config_dir.join("L0-CONF-ROOT.yml").expand) { |file| YAML.parse(file) }
 
     pp @index_conf if @verbose
   end
@@ -28,11 +27,11 @@ class Lindex::Environment
     "[[#{File.basename(item, ".md").capitalize.gsub("_", " ")}]]"
   end
 
-  def l2_index_filepath(term)
-    @index_dir.join "L2-INDEX_TRM_#{term}.json"
+  def l1_index_filepath(tax)
+    @index_dir.join "L1-INDEX-TAX-#{tax}.json"
   end
 
-  def l3_index_filepath(term, value)
-    @index_dir.join "L3-INDEX_TRM_#{term}_VAL_#{value}.json"
+  def l2_index_filepath(tax, term)
+    @index_dir.join "L2-INDEX-TAX-#{tax}-TRM-#{term}.json"
   end
 end

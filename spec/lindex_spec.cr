@@ -12,8 +12,8 @@ describe Lindex do
     env.file_name_to_wiki_link("this_is_a_regular_wiki_item").should eq("[[This is a regular wiki item]]")
     env.index_conf.class.should eq YAML::Any
 
-    env.l2_index_filepath("project").should eq(Path["tmp/index_files/L2-INDEX_TRM_project.json"].expand)
-    env.l3_index_filepath("project", "lindex development").should eq(Path["tmp/index_files/L3-INDEX_TRM_project_VAL_lindex development.json"].expand)
+    env.l1_index_filepath("project").should eq(Path["tmp/index_files/L1-INDEX-TAX-project.json"].expand)
+    env.l2_index_filepath("project", "lindex development").should eq(Path["tmp/index_files/L2-INDEX-TAX-project-TRM-lindex development.json"].expand)
   end
 
   it "should create index and have valid _index_docs_starred.json" do

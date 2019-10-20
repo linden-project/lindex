@@ -1,6 +1,6 @@
 ---
-title: Type
-infotext: About type
+singular: project
+plural: projects
 views:
   type:
     group_by: type

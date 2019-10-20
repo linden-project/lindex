@@ -1,6 +1,6 @@
 ---
 title: One
-infotext: About one
+description: About one
 views:
   type:
     group_by: type
