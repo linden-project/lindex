@@ -1,5 +1,5 @@
 module Lindex
-  VERSION = "0.1.7"
+  VERSION = "0.2.0"
 
   class BuildInfo
     macro define_method(name, content)
