@@ -1,6 +1,6 @@
 # Lindex, a markdown document database indexer
 
-[![GitHub release](https://img.shields.io/github/release/mipmip/lindex.svg)](https://github.com/mipmip/lindex/releases)
+![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/mipmip/lindex)
 [![Build Status](https://travis-ci.org/mipmip/lindex.svg?branch=master)](https://travis-ci.org/mipmip/lindex)
 
 Lindex is an indexer for the [Linden Notes standard](https://github.com/mipmip/linden-spec). Use Lindex together with the vim plugin [Linny.vim](https://github.com/mipmip/linny.vim).
