@@ -77,6 +77,9 @@ make run_coverage
 make build
 ```
 
+## Maintainer Documentation
+
+To release a new version run ````crelease [VERSION]````
 
 ## Contributing
 
