@@ -9,7 +9,7 @@ Lindex is written in Crystal. It's fast.
 
 ## Features
 
-- Implements all features of [Linden Notes 0.0.1](https://github.com/mipmip/linden-spec)
+- Implements all features of [Linden Notes 0.1.2](https://github.com/mipmip/linden-spec)
 - Tested on Linux and macOS Mojave
 
 ## Installation
@@ -43,7 +43,9 @@ and ````/config```` with all linny-l2 and linny-l3 config-files.
 
 ## Usage
 
-run ````lindex make```` to create index. Run ````lindex make -c /path/to/different/config/lindex.yml
+Run ````lindex make```` to create index.
+
+Run ````lindex make -c /path/to/different/config/lindex.yml
 
 ```
   lindex - Linny Indexer

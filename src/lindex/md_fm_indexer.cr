@@ -69,7 +69,7 @@ class Lindex::MdFmIndexer
 
   def write_taxonomy_terms_and_values_index_files
     @env.index_conf.as_h["index_keys"].as_h.each do |index_key, index_val|
-      #@idx_a_taxonomies_singular << index_val.as_h["singular"].as_s
+      # @idx_a_taxonomies_singular << index_val.as_h["singular"].as_s
       @idx_a_taxonomies_singular << index_key.as_s
 
       if index_val.as_h.has_key?("features") && index_val.as_h["features"].as_a.includes? "sub_index"
