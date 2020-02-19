@@ -10,6 +10,7 @@ index_keys:
     top_level: true
     features:
       - sub_index
+      - count_tasks
   material:
     type: has_many_belong_to_many
     top_level: true

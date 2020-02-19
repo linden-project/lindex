@@ -11,6 +11,7 @@ class Lindex::MdFmIndexer
   @idx_h_docs_with_titles = Hash(String, String).new # DEPRICIATED
   @idx_h_taxonomies_with_terms = Hash(String, Hash(String, Array(String))).new
   @idx_h_lindex_self_info = Hash(String, String).new
+  @idx_h_docs_with_tasks_count = Hash(String, Hash(String, Int32)).new
 
   def initialize(@env)
     @proc_current_yaml_level = 0
@@ -61,18 +62,20 @@ class Lindex::MdFmIndexer
   def write_to_disk
     write_to_file(@env.index_dir.join("_index_taxonomies.json"), @idx_a_taxonomies_singular.to_json)
     write_to_file(@env.index_dir.join("_index_docs_starred.json"), @idx_a_docs_starred.to_json)
+    write_to_file(@env.index_dir.join("_index_docs_tasks_count.json"), @idx_h_docs_with_tasks_count.to_json)
     write_to_file(@env.index_dir.join("_index_docs_with_props.json"), @idx_h_docs_with_terms.to_json)
     write_to_file(@env.index_dir.join("_index_docs_with_title.json"), @idx_h_docs_with_titles.to_json) # DEPRICIATED
     write_to_file(@env.index_dir.join("_index_terms_starred.json"), @idx_a_terms_starred.to_json)
     write_to_file(@env.index_dir.join("_indexer_info.json"), @idx_h_lindex_self_info.to_json)
   end
 
+
   def write_taxonomy_terms_and_values_index_files
     @env.index_conf.as_h["index_keys"].as_h.each do |index_key, index_val|
       # @idx_a_taxonomies_singular << index_val.as_h["singular"].as_s
       @idx_a_taxonomies_singular << index_key.as_s
 
-      if index_val.as_h.has_key?("features") && index_val.as_h["features"].as_a.includes? "sub_index"
+      if has_feature? index_val.as_h, "sub_index"
         index_key_vals_titles = Hash(String, YAML::Any).new
 
         if @idx_h_taxonomies_with_terms.has_key? index_key.as_s
@@ -90,7 +93,6 @@ class Lindex::MdFmIndexer
           end
         end
       end
-
       # # write taxonomy index with terms
       write_to_file(@env.l1_index_filepath(index_key), index_key_vals_titles.to_json)
     end
@@ -125,7 +127,7 @@ class Lindex::MdFmIndexer
             @idx_h_docs_with_terms[File.basename(file)]["title"] = YAML::Any.new(filename_to_title(file))
           end
 
-          @idx_h_docs_with_titles[File.basename(file)] = @idx_h_docs_with_terms[File.basename(file)]["title"].as_s # DEPRICIATED
+          @idx_h_docs_with_titles[File.basename(file)] = @idx_h_docs_with_terms[File.basename(file)]["title"].as_s # DEPRECIATED
 
           add_value_to_term_in_taxonomy_idx "front_matter", "valid", @proc_current_markdown_file
           @idx_h_docs_with_terms[File.basename(file)]["front_matter"] = YAML::Any.new("valid")
@@ -133,7 +135,7 @@ class Lindex::MdFmIndexer
           # GEEN GELDIGE FRONTMATTER
           @idx_h_docs_with_terms[File.basename(file)] = {"title" => YAML::Any.new(filename_to_title(file))}
 
-          @idx_h_docs_with_titles[File.basename(file)] = @idx_h_docs_with_terms[File.basename(file)]["title"].as_s # DEPRICIATED
+          @idx_h_docs_with_titles[File.basename(file)] = @idx_h_docs_with_terms[File.basename(file)]["title"].as_s # DEPRECIATED
 
           @idx_h_docs_with_terms[File.basename(file)]["front_matter"] = YAML::Any.new("invalid")
           add_value_to_term_in_taxonomy_idx "front_matter", "invalid", @proc_current_markdown_file
@@ -142,8 +144,31 @@ class Lindex::MdFmIndexer
     end
   end
 
+  private def has_feature?( index_hash, feature_key)
+    if index_hash.has_key?("features") && index_hash["features"].as_a.includes? feature_key
+      true
+    else
+      false
+    end
+  end
+
   private def filename_to_title(filepath)
     File.basename(filepath, ".md").capitalize.gsub("_", " ")
+  end
+
+  private def add_tasks_count_entry(file)
+    open = 0
+    closed = 0
+    File.each_line(file) do |line|
+      open += 1 if /-\ \[\ \]/ =~ line
+      closed += 1 if /-\ \[x\]/ =~ line
+    end
+
+    @idx_h_docs_with_tasks_count[File.basename(file)] = {
+      "open" => open,
+      "closed" => closed,
+      "total" => (open + closed)
+    }
   end
 
   private def index_file(file)
@@ -158,6 +183,11 @@ class Lindex::MdFmIndexer
 
         @env.index_conf.as_h["index_keys"].as_h.keys.each do |index_key|
           if front_matter_as_yaml_any.as_h.has_key? index_key
+
+            if has_feature? @env.index_conf.as_h["index_keys"].as_h[index_key].as_h, "count_tasks"
+              add_tasks_count_entry(file)
+            end
+
             if @env.index_conf.as_h["index_keys"].as_h[index_key]["type"] == "has_many_belong_to_many"
               case front_matter_as_yaml_any.as_h[index_key].raw
               when Array(YAML::Any)
