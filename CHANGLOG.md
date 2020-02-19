@@ -1,6 +1,9 @@
 
 # Changelog Lindex
 
+# 0.2.1 - 19 feb 2020
+- index: _index_docs_tasks
+
 # 0.2.0 - 22 October 2019
 - config: TRM wordt TAX
 - config: VAL wordt TRM
