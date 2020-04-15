@@ -8,17 +8,20 @@ class Lindex::Environment
   getter index_conf : YAML::Any
 
   def initialize(@main_config_file, @verbose)
-    filename = Path[@main_config_file].expand
+    filename = Path[@main_config_file].expand(home: true)
 
     raise "FATAL L0 ROOT CONF: #{filename}" unless File.exists?(filename)
 
     main_conf = File.open(filename) { |file| YAML.parse(file) }
+    pp main_conf if @verbose
 
-    @index_dir = Path[main_conf["index_files_path"].as_s].expand
-    @wiki_dir = Path[main_conf["root_path"].as_s, "wiki"].expand
-    @config_dir = Path[main_conf["root_path"].as_s, "config"].expand
+    @index_dir = Path[main_conf["index_files_path"].as_s].expand(home: true)
+    @wiki_dir = Path[main_conf["root_path"].as_s, "wiki"].expand(home: true)
+    @config_dir = Path[main_conf["root_path"].as_s, "config"].expand(home: true)
 
-    @index_conf = File.open(@config_dir.join("L0-CONF-ROOT.yml").expand) { |file| YAML.parse(file) }
+    @index_conf = File.open(@config_dir.join("L0-CONF-ROOT.yml")) do |file|
+      YAML.parse(file)
+    end
 
     pp @index_conf if @verbose
   end
